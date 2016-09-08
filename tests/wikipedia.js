@@ -1,5 +1,6 @@
 var test = require('tape');
-var wiki = require('../server/services/wikipedia');
+var Wikipedia = require('../server/services/wikipedia');
+var wiki = new Wikipedia();
 
 test('Can get philosophy page', function (t) {
   var url = 'https://en.wikipedia.org/wiki/Philosophy';
@@ -23,7 +24,7 @@ test('Can get from philosophy to greek', function (t) {
       t.equals(pages[0].title, 'Philosophy');
       t.equals(pages[1].title, 'Greek language');
       t.equals(pages[2].title, 'Modern Greek');
-      
+
       t.end();
     })
 });

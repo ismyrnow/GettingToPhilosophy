@@ -1,7 +1,25 @@
 var rp = require('request-promise');
 var _ = require('lodash');
 
-function getPagesBetween(a, b) {
+var mockDb = {
+  getPageByUrl: function () {
+    return Promise.resolve();
+  },
+  insertPage: function (page) {
+    return page;
+  }
+};
+
+/**
+ * Takes a database instance, which is optional.
+ * @param db {object} database with { getPageByUrl, insertPage } functions.
+ */
+var Wikipedia = function (db) {
+  this.db = db || mockDb;
+};
+
+Wikipedia.prototype.getPagesBetween = function (a, b) {
+  var self = this;
   var pages = [];
   var page = null;
 
@@ -9,9 +27,7 @@ function getPagesBetween(a, b) {
 
     (function getPageRecursive(url) {
 
-      getPage(url).then(function (page) {
-        console.log(page);
-
+      self.getPage(url).then(function (page) {
         var isDuplicate = _.find(pages, { url: page.url });
         var isB = page.url === b;
 
@@ -27,9 +43,21 @@ function getPagesBetween(a, b) {
     }(a));
 
   });
-}
+};
 
-function getPage(url) {
+Wikipedia.prototype.getPage = function (url) {
+  var db = this.db;
+
+  return db.getPageByUrl(url).then(function (page) {
+    if (page) {
+      return page;
+    } else {
+      return requestPage(url).then(db.insertPage);
+    }
+  });
+};
+
+function requestPage(url) {
   return rp(url).then(function (html) {
     var title = getTitle(html);
     var firstLink = getFirstLink(html);
@@ -41,6 +69,7 @@ function getPage(url) {
     };
   });
 }
+
 
 function getTitle(html) {
   var matches = html.match(/<title>(.*?) - .*?<\/title>/);
@@ -62,5 +91,4 @@ function getFirstLink(html) {
   }
 }
 
-exports.getPage = getPage;
-exports.getPagesBetween = getPagesBetween;
+module.exports = Wikipedia;

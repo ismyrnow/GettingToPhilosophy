@@ -3,9 +3,11 @@ var express = require('express');
 var exphbs = require('express-handlebars');
 var logger = require('morgan');
 var bodyParser = require('body-parser');
-var wiki = require('./services/wikipedia');
+var Wikipedia = require('./services/wikipedia');
+var db = require('./db');
 
 var app = express();
+var wiki = new Wikipedia(db);
 
 var hbs = exphbs.create({
   extname: '.hbs',
