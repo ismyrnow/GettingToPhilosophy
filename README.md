@@ -1,5 +1,7 @@
 Web app which gives you the path between an article on Wikipedia, and the Philosophy article.
 
+See this [wikipedia article](https://en.wikipedia.org/wiki/Wikipedia:Getting_to_Philosophy) for more information about the idea.
+
 ![screenshot](screenshot.png)
 
 ## Running
